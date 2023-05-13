@@ -1,0 +1,10 @@
+obj/
+*.zip
+.nfs*
+
+.vscode/
+
+bank_app
+bank_test
+
+test/
