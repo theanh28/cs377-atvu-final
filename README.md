@@ -23,7 +23,7 @@ The original project 4, empowered with message queues brought to you by semaphor
 
 ## Design
 
-**The slides present this design with much better illustrations, PLEASE CHECK THE [SLIDES](https://docs.google.com/presentation/d/1YfZQOTx1mCIu35VXGmmKUYVZ3bcSaAhIkxsK7tuhOXc/edit?usp=sharing).**
+> The slides present this design with much better illustrations, PLEASE CHECK THE DESIGN SECTION OF THE [SLIDES](https://docs.google.com/presentation/d/1YfZQOTx1mCIu35VXGmmKUYVZ3bcSaAhIkxsK7tuhOXc/edit?usp=sharing). There are presenter notes explaining the slides below each slide.**
 
 Also there are code comments for each and every APIs and fields in the project that should help with understanding.
 ### Overview

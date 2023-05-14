@@ -173,10 +173,13 @@ void* worker(void *args){
 				bank->deposit(worker_id, ledger.ledgerID, ledger.from, ledger.amount);
 				break;
 			case W:
-				bank->withdraw(worker_id, ledger.ledgerID, ledger.from, ledger.amount);
+				if (bank->withdraw(worker_id, ledger.ledgerID, ledger.from, ledger.amount) < 0
+						&& ledger.retry > 0) {
+					-- ledger.retry;
+					queue.push(ledger);
+				}
 				break;
 			case T:
-				// Bank::transfer() is the only transaction that can fail. We retry the transaction upto `Ledger::retry`. 
 				if (bank->transfer(worker_id, ledger.ledgerID, ledger.from, ledger.to, ledger.amount) < 0
 						&& ledger.retry > 0) {
 					-- ledger.retry;
