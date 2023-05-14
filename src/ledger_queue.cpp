@@ -9,8 +9,6 @@ LedgerQueue::LedgerQueue() {
   pthread_mutex_init(&lock, NULL);
   // Initially, queue is empty, so no subscribing worker should try to consume Ledgers.
   sem_init(&sem, 0, 0);
-
-  this->id = 0;
 }
 
 /**
@@ -55,12 +53,7 @@ LedgerQueueManager::LedgerQueueManager(int N) {
   lock = PTHREAD_MUTEX_INITIALIZER;
   pthread_mutex_init(&lock, NULL);
 
-  queues = new LedgerQueue[N];  
-  for (int i = 0; i < N; ++i) {
-    queues[i].id = i;
-  }
-
-  this->queues = queues;
+  this->queues = new LedgerQueue[N];
 }
 
 /**
@@ -78,6 +71,6 @@ LedgerQueueManager::~LedgerQueueManager() {
  */
 void LedgerQueueManager::push(Ledger ledger) {
   // the `from` field of a Ledger stands for the acc number that 
-  // a queue manages, and equal to the queue id. 
+  // a queue manages, and equal to the queue index. 
   queues[ledger.from].push(ledger);
 }

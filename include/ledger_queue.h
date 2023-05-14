@@ -28,7 +28,6 @@ class LedgerQueue {
     void push(Ledger ledger);
     struct Ledger pop();
 
-    int id; // identify this LedgerQueue, identical to bank acc number.
     sem_t sem; // used to signal workers when queue receives new Ledgers.
 };
 
