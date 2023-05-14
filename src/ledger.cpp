@@ -19,7 +19,7 @@ pthread_mutex_t log_lock; // control different sources of concurrent logs (e.g. 
 
 // STOP MECHANISM.
 bool completed = false; // boolean used to stop the workers after all ledgers have been processed.
-time_t last_ledger_read = NULL; // used to stop workers if last ledger was read > 5s ago, aka idle time > 5s.
+time_t last_ledger_processed = NULL; // used to stop workers if last ledger was processed > 5s ago, aka idle time > 5s.
 
 /**
  * @brief Init and start bank, queues, and threads.
@@ -116,7 +116,6 @@ void *reader(void* arg){
 	pthread_mutex_lock(&reader_lock);
 	while (input_file >> f >> t >> a >> m) {
 		int ledger_id = next_ledger_id ++;
-		last_ledger_read = time(NULL);
 		// unlock after assigning ledger ID and last read to prevent race condition.
 		pthread_mutex_unlock(&reader_lock);
 
@@ -128,8 +127,7 @@ void *reader(void* arg){
 		l.ledgerID = ledger_id;
 		LQManager->push(l);
 
-		// TODO: change `from` to ledger_id
-		recordReaderParse(reader_id, l.from);
+		recordReaderParse(reader_id, l.ledgerID);
 
 		pthread_mutex_lock(&reader_lock); // lock to read at next loop.
 		// record reader finishes parsing a Ledger, and we utilize the lock too.
@@ -167,7 +165,7 @@ void* worker(void *args){
 		if (completed) { // program stop mechanism.
 			return NULL;
 		}
-
+		last_ledger_processed = time(NULL); // reset idle time.
 		Ledger ledger = queue.pop();
 		switch (ledger.mode) {
 			case D:
@@ -196,10 +194,10 @@ void* worker(void *args){
  * 
  * @param arg - void* pointing to `worker_per_acc` value. 
  * 
- * Similar to a spin lock, this function keeps spinning and check, every second, the `last_ledger_read` 
- * for program idle time, which infers end of input file. When program has been idle for > 5s,
- * it sets `completed` to true to signal the end of the program, and wake up worker threads using
- * the queue semaphores.
+ * Similar to a spin lock, this function keeps spinning and check, every second, the `last_ledger_processed` 
+ * for program idle time, which infers no other ledgers to parse or process. When program has been idle for
+ * > 5s, this function sets `completed` to true to signal the end of the program, and wake up worker threads 
+ * using the queue semaphores.
  * 
  * @return void* 
  */
@@ -207,11 +205,11 @@ void *idle_check(void* arg) {
 	int worker_per_acc = *(int *) arg;
 	while (true) {
 		sleep(1);
-		if (last_ledger_read == NULL) {
-			// default value implies no ledger has been read.
+		if (last_ledger_processed == NULL) {
+			// default value implies no ledger has been processed.
 			continue;
 		}
-		int time_diff = (int)(time(NULL) - last_ledger_read);
+		int time_diff = (int)(time(NULL) - last_ledger_processed);
 		if (time_diff > 5) {
 			break;
 		}
@@ -221,7 +219,7 @@ void *idle_check(void* arg) {
 	// so we can cout without lock.
 	cout << "---> ending program \n";
 	completed = true;
-	// Wake up each worker thread by signaling each queue semaphore 'worker_per_acc' times.
+	// Wake up each worker thread by signaling queue semaphore for 'worker_per_acc' times.
 	for (int i = 0; i < bank_acc; ++i) {
 		for (int j = 0; j < worker_per_acc; ++j) {
 			// signal queue semaphore once for each worker thread consuming this queue.
