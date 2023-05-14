@@ -226,7 +226,7 @@ void *idle_check(void* arg) {
 			// signal queue semaphore once for each worker thread consuming this queue.
 			sem_post(&(LQManager->queues[i].sem));
 			pthread_mutex_lock(&log_lock);
-			cout << "--> Signal worker " << i << "." << j  << "to end.\n";
+			cout << "--> Signal worker " << i << "." << j  << " to end.\n";
 			pthread_mutex_unlock(&log_lock);
 		}
 	}
