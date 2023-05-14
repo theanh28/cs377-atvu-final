@@ -2,7 +2,7 @@
 C++ multi-threading (concurrent) message queue for bank transactions.
 
 ## Slides and video
-Here's the [slides](https://docs.google.com/presentation/d/1YfZQOTx1mCIu35VXGmmKUYVZ3bcSaAhIkxsK7tuhOXc/edit?usp=sharing) and a [video](#) of me reading it.
+Here's the [slides](https://docs.google.com/presentation/d/1YfZQOTx1mCIu35VXGmmKUYVZ3bcSaAhIkxsK7tuhOXc/edit?usp=sharing) and a [video](https://www.youtube.com/watch?v=kb8xpJg4BvI) of me reading it.
 
 ## Goals and solution
 The original project 4, empowered with message queues brought to you by semaphores. We strive to achieve 3 goals: 
