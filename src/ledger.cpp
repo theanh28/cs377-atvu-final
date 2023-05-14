@@ -88,6 +88,7 @@ void StartBank(int num_readers, int num_workers_per_acc, char *filename) {
 
 	bank->print_account();
 
+	input_file.close();
 	pthread_mutex_destroy(&reader_lock);
 	pthread_mutex_destroy(&log_lock);
 	delete bank;
@@ -147,7 +148,6 @@ void* worker(void *args){
 	struct WorkerThreadArgs* thread_args = (struct WorkerThreadArgs*) args;
 	int queue_id = thread_args->queue_id;
 	int sub_id = thread_args->sub_id;
-	string worker_id_buf = to_string(queue_id) + "." + to_string(sub_id);
 	char worker_id[10];
 	sprintf(worker_id, "%d.%d", queue_id, sub_id);
 
@@ -161,7 +161,8 @@ void* worker(void *args){
 	while (true) {
 		// Wait for queue to signal new ledgers.
 		sem_wait(queue_sem);
-
+		pthread_mutex_lock(&log_lock);
+		pthread_mutex_unlock(&log_lock);
 		if (completed) { // program stop mechanism.
 			return NULL;
 		}
@@ -224,6 +225,11 @@ void *idle_check(void* arg) {
 		for (int j = 0; j < worker_per_acc; ++j) {
 			// signal queue semaphore once for each worker thread consuming this queue.
 			sem_post(&(LQManager->queues[i].sem));
+			pthread_mutex_lock(&log_lock);
+			int sem_v;
+			sem_getvalue(&(LQManager->queues[i].sem), &sem_v);
+			cout << "--> Signal worker " << i << "." << j  << "to end.\n";
+			pthread_mutex_unlock(&log_lock);
 		}
 	}
 	return NULL;

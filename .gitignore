@@ -6,5 +6,9 @@ obj/
 
 bank_app
 bank_test
+gen_ledger
+
+# test file
+qwe.txt
 
 test/

@@ -3,6 +3,7 @@ _OBJ = bank.o ledger.o ledger_queue.o
 _MOBJ = main.o
 _TOBJ = test.o
 
+GENBIN = gen_ledger
 APPBIN = bank_app
 TESTBIN = bank_test
 
@@ -26,9 +27,12 @@ $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS)
 $(ODIR)/%.o: $(TDIR)/%.cpp $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-all: $(APPBIN) $(TESTBIN) submission
+all: $(APPBIN) $(GENBIN) submission
 
 $(APPBIN): $(OBJ) $(MOBJ)
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+
+$(GENBIN): src/generate_ledger.cpp
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
 # $(TESTBIN): $(TOBJ) $(OBJ)
