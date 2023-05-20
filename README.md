@@ -4,6 +4,13 @@ C++ multi-threading (concurrent) message queue for bank transactions.
 ## Slides and video
 Here's the [slides](https://docs.google.com/presentation/d/1YfZQOTx1mCIu35VXGmmKUYVZ3bcSaAhIkxsK7tuhOXc/edit?usp=sharing) and a [video](https://www.youtube.com/watch?v=kb8xpJg4BvI) of me reading it.
 
+## How to use (perferably in edlab):
+1. Clone the git repo: 		`git clone https://github.com/theanh28/cs377-atvu-final.git`
+2. Compile with make file: 	`make`
+3. Run program: 		`bank_app <num_of_readers> <num_of_workers_per_acc> <ledger_file>`
+4. (Optional) generate more ledger file: `gen_ledger <ledger_file> <num_of_ledgers>`
+
+
 ## Goals and solution
 The original project 4, empowered with message queues brought to you by semaphores. We strive to achieve 3 goals: 
 1. Multi concurrent ledger readers and workers. 
